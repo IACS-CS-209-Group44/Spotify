@@ -6,11 +6,11 @@ Michael S. Emanuel
 Sun Oct 28 10:52:44 2018
 """
 
-import pyodbc
-import json
-import os
 from sys import argv
-import numpy as np
+import os
+import json
+import pyodbc
+import time
 from typing import List, Tuple, Dict
 
 
@@ -67,7 +67,7 @@ def get_insertions(fname: str) -> Tuple[List[Tuple], List[Tuple]]:
         # Assemble this into a tuple with one row to be inserted into r.Playlist
         row_playlist: Tuple = (PlaylistID, PlaylistName, NumTracks, NumAlbums, NumArtists,
                                NumFollowers, NumEdits, DurationMS, IsCollaborative, ModifiedAt)
-        # Save this tow to the inserts
+        # Save this row to the inserts
         rows_playlist[i] = row_playlist
 
         # Get the tracks out of this playlist
@@ -123,13 +123,13 @@ def delete_playlist(curs, PlaylistID_Min: int, PlaylistID_Max: int) -> None:
 
     # SQL string to delete records for this range of PlaylistID
     sqlDelete = '''
-    DELETE FROM r.Playlist WHERE ? <= PlaylistID and ? < PlaylistID
+    DELETE FROM r.Playlist WHERE ? <= PlaylistID and PlaylistID < ?
     '''
     # Delete records in this range of PlaylistID
     curs.execute(sqlDelete, PlaylistID_Min, PlaylistID_Max)
 
 
-def insert_playlist(curs, rows_playlist: List[Tuple]):
+def insert_playlist(curs, rows: List[Tuple]):
     """
     Inserts a list of rows into the DB table r.Playlist
     INPUTS:
@@ -148,14 +148,31 @@ def insert_playlist(curs, rows_playlist: List[Tuple]):
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     '''
     # Insert batch of records using executemany method
-    curs.executemany(sqlInsert, rows_playlist)
+    curs.executemany(sqlInsert, rows)
     # Commit changes
     curs.commit()
 
 
-
 # *********************************************************************************************************************
-def insert_playlist_entry(curs, rows_playlist_entry: List[Tuple]):
+def delete_playlist_entry(curs, PlaylistID_Min: int, PlaylistID_Max: int) -> None:
+    """
+    Deletes a block of rows in DB table r.PlaylistEntry
+    INPUTS:
+    ======
+    curs:           Database cursor
+    PlaylistID_min:   First PLaylistID to be deleted (inclusive)
+    PlaylistID_max:   Last  PLaylistID to be deleted (exclusive)
+    """
+
+    # SQL string to delete records for this range of PlaylistID
+    sqlDelete = '''
+    DELETE FROM r.PlaylistEntry WHERE ? <= PlaylistID and PlaylistID < ?
+    '''
+    # Delete records in this range of PlaylistID
+    curs.execute(sqlDelete, PlaylistID_Min, PlaylistID_Max)
+
+
+def insert_playlist_entry(curs, rows: List[Tuple]):
     """
     Inserts a list of rows into the DB table r.PlaylistEntry
     INPUTS:
@@ -173,37 +190,9 @@ def insert_playlist_entry(curs, rows_playlist_entry: List[Tuple]):
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     '''
     # Insert batch of records using executemany method
-    curs.executemany(sqlInsert, rows_playlist)
+    curs.executemany(sqlInsert, rows)
     # Commit changes
     curs.commit()
-
-
-
-# *********************************************************************************************************************
-# Set the path of the MPD directory
-mpd_path = r'D:/Dropbox/IACS-CS-209-Spotify/mpd/data'
-
-# Move to this directory and get all filesnames; each file is a slice
-os.chdir(mpd_path)
-filenames: List[str] = os.listdir()
-
-fname: str = filenames[0]
-rows_playlist, rows_playlist_entry = get_insertions(fname)
-
-# Range of PlaylistID
-PlaylistID_Min = min(pl[0] for pl in rows_playlist)
-PlaylistID_Max = max(pl[0] for pl in rows_playlist) + 1
-
-# Get DB connection
-with getConnection() as conn:
-    # Cursor
-    curs = conn.cursor()
-    # Set mode to fast insertions on execute many; see
-    curs.fast_executemany = True
-    # Delete records in this range
-    delete_playlist(curs, PlaylistID_Min, PlaylistID_Max)
-    # Insert records in this range
-    insert_playlist(curs, rows_playlist)
 
 
 # *********************************************************************************************************************
@@ -226,9 +215,80 @@ def main():
     # Range of PlaylistID's
     PlaylistID_Min: int = sliceMin * 1000
     PlaylistID_Max: int = sliceMax * 1000
-    # Stats update
+    # Status update
     print(f'Beginning database import from slice {sliceMin} to {sliceMax}, '
           f'i.e. from PlaylistID {PlaylistID_Min} to {PlaylistID_Max}.')
+
+    # Set the path of the MPD directory
+    mpd_path = r'D:/Dropbox/IACS-CS-209-Spotify/mpd/data'
+    # Move to this directory and get all filesnames; each file is a slice
+    os.chdir(mpd_path)
+    fnames: List[str] = os.listdir()
+    # The size of each slice
+    slice_size: int = 1000
+
+    # Make a sorted list of mpd slice files
+    fnames_mpd: List[Tuple[str, int]] = list()
+    # Iterate over all the files in this directory
+    for fname in fnames:
+        # Filenames have the format e.g.  "mpd.slice.1000-1999.json"
+        # First, check that this is an mpd data slice file; if not, skip it
+        is_mpd_file: bool = fname.startswith("mpd.slice.") and fname.endswith(".json")
+        if not is_mpd_file:
+            continue
+        # Extract the PlaylistID range from the file name
+        pid_range: str = fname.split('.')[2]
+        # The slice is the starting pid / 1000 (integer division)
+        sliceNum: int = int(pid_range.split('-')[0]) // slice_size
+        # If this slice is in the range, add (fname, sliceNum) to fnames_mpd
+        if sliceMin <= sliceNum and sliceNum < sliceMax:
+            fnames_mpd.append((fname, sliceNum))
+    # Sort this by sliceNum
+    fnames_mpd.sort(key=lambda x: x[1])
+
+    # Get a database connection and a cursor; close the connection at the end!
+    conn = getConnection()
+    curs = conn.cursor()
+    # Set mode to fast insertions on execute many
+    curs.fast_executemany = True
+
+    # Track progress
+    num_processed: int = 0
+    num_total: int = sliceMax - sliceMin
+    # Start the timer
+    t0 = time.time()
+
+    for fname, sliceNum in fnames_mpd:
+        # If we get here, this is a valid mpd data file in the range we want to process
+        # Get the rows of data to insert into both tables
+        rows_playlist, rows_playlist_entry = get_insertions(fname)
+        # Range of PlaylistID in this slice
+        PlaylistID_Min = min(pl[0] for pl in rows_playlist)
+        PlaylistID_Max = max(pl[0] for pl in rows_playlist) + 1
+
+        # Delete records in this range on the table r.Playlist
+        delete_playlist(curs, PlaylistID_Min, PlaylistID_Max)
+        # Insert records in this range on the table r.Playlist
+        insert_playlist(curs, rows_playlist)
+
+        # Delete records in this range on the table r.PlaylistEntry
+        delete_playlist_entry(curs, PlaylistID_Min, PlaylistID_Max)
+        # Insert records in this range on the table r.PlaylistEntry
+        insert_playlist_entry(curs, rows_playlist_entry)
+
+        # Status update
+        num_processed += 1
+        num_left = num_total - num_processed
+        t1 = time.time()
+        elapsed_time = t1 - t0
+        average_pace = elapsed_time / num_processed
+        projected_time = num_left * average_pace
+        print(f'Processed slice {sliceNum} in {fname}.  '
+              f'Elapsed time {round(elapsed_time)}, projected time {round(projected_time)} seconds.')
+
+    # Close DB connection
+    curs.close()
+    conn.close()
 
 
 if __name__ == '__main__':
