@@ -9,13 +9,13 @@ PlaylistID INT NOT NULL,
 Position SMALLINT NOT NULL,
 -- The track
 TrackUri VARCHAR(256) NOT NULL,
-TrackName VARCHAR(256) NOT NULL,
+TrackName VARCHAR(1024) NOT NULL,
 -- The album
 AlbumUri VARCHAR(256) NOT NULL,
-AlbumName VARCHAR(256) NOT NULL,
+AlbumName VARCHAR(1024) NOT NULL,
 -- The artist
 ArtistUri VARCHAR(256) NOT NULL,
-ArtistName VARCHAR(256) NOT NULL,
+ArtistName VARCHAR(1024) NOT NULL,
 -- Additional track info
 TrackDurationMS INT NOT null
 -- Primary Key and indices

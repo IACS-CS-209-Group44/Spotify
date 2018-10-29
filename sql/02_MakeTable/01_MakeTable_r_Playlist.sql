@@ -6,7 +6,7 @@ GO
 
 CREATE TABLE r.Playlist(
 PlaylistID INT NOT NULL,
-PlaylistName VARCHAR(256) NOT NULL,
+PlaylistName VARCHAR(1024) NOT NULL,
 -- The number of tracks, albums, and artists on this playlist
 NumTracks SMALLINT NOT NULL,
 NumAlbums SMALLINT NOT NULL,
