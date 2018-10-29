@@ -1,6 +1,10 @@
 USE SpotifyDB
 GO
 
+ALTER TABLE dbo.PlaylistEntry
+DROP CONSTRAINT IF EXISTS FK_PlaylistEntry_TrackID;
+GO
+
 TRUNCATE TABLE dbo.Track;
 GO
 
@@ -20,3 +24,9 @@ FROM
 GROUP BY pe.TrackName, pe.TrackUri, ar.ArtistID, al.AlbumID
 ORDER BY pe.TrackUri;
 GO
+
+ALTER TABLE dbo.PlaylistEntry
+ADD CONSTRAINT FK_PlaylistEntry_TrackID
+  FOREIGN KEY (TrackID) REFERENCES dbo.Track(TrackID);
+GO
+
