@@ -1,34 +1,59 @@
 """
 Michael S. Emanuel
-Sun Oct 28 22:12:19 2018
+Sat Nov 24 12:28:39 2018
 """
+
 
 import os
 import pandas as pd
+import time
+from IPython.display import display
 
 # Path for Dropbox
 path_dropbox_mpd = 'D:/Dropbox/IACS-CS-209-Spotify/mpd/database_export'
 # Navigate to the dropbox folder
 os.chdir(path_dropbox_mpd)
 
-# Load the dataframes for Artist, Album, Track
-if 'df_artist' not in globals():
-    df_artist = pd.read_csv('Artist.csv', sep=',', index_col='ArtistID')
-if 'df_album' not in globals():
-    df_album = pd.read_csv('Album.csv', sep=',', index_col='AlbumID')
-if 'df_track' not in globals():
-    df_track = pd.read_csv('Track.csv', sep=',', index_col='TrackID')
+# Filename for the main h5 data file
+fname_h5 = 'data.h5'
 
-# Load the dataframes for Playlist and PlaylistEntry
-if 'df_playlist' not in globals():
-    df_playlist = pd.read_csv('Playlist.csv', sep=',', index_col='PlaylistID')
-if 'df_playlist_entry' not in globals():
-    df_playlist_entry = pd.read_csv('PlaylistEntry.csv', sep=',', index_col=['PlaylistID', 'Position'])
+# Start timer
+t0 = time.time()
 
+# Load the dataframes for Artist, Album, Track, and Playlist
+df_artist = pd.read_hdf(fname_h5, 'Artist')
+df_album = pd.read_hdf(fname_h5, 'Album')
+df_track = pd.read_hdf(fname_h5, 'Track')
+df_playlist = pd.read_hdf(fname_h5, 'Playlist')
+
+# Load the big dataframe for PlaylistEntry
+df_playlist_entry = pd.read_hdf('playlist_entry.h5', 'PlaylistEntry')
+
+# Load the dataframes for audio features: AudioFeatures, Genre, MetaGenre, TrackGenre, TrackMetaGenre
+df_audio_features = pd.read_hdf(fname_h5, 'AudioFeatures')
+df_genre = pd.read_hdf(fname_h5, 'Genre')
+df_meta_genre = pd.read_hdf(fname_h5, 'MetaGenre')
+df_track_genre = pd.read_hdf(fname_h5, 'TrackGenre')
+df_track_meta_genre = pd.read_hdf(fname_h5, 'TrackMetaGenre')
+
+# Status update
+t1 = time.time()
+elapsed = t1 - t0
+print(f'Loaded 10 Data Frames:')
+print(f'Artist, Album, Track Playlist, PlaylistEnry, AudioFeatures, Genre, MetaGenre, TrackGenre, TrackMetaGenre.')  
+print(f'Elapsed Time: {elapsed:0.2f} seconds.')
+
+
+def demo_dataframes(dataframes, df_names):
+    """Demo the contents of some dataframes"""
+    for i, df in enumerate(dataframes):
+        df_name = df_names[i]
+        print(f'\n***** {df_name}: First 20 Rows *****')
+        display(df.head(20))
+
+# Dataframes to be printed to screen (top 20 rows only)
+dataframes = [df_artist, df_album]
+df_names = ['Artist', 'Album']
 # Demo dataframes
-dataframes = [df_artist, df_album, df_track, df_playlist, df_playlist_entry]
-df_names = ['Artist', 'Album', 'Track', 'Playlist', 'PlaylistEntry']
-for i, df in enumerate(dataframes):
-    df_name = df_names[i]
-    print(f'\n***** {df_name}: First 20 Rows *****')
-    print(df.head(20))
+print('')
+demo_dataframes(dataframes, df_names)
