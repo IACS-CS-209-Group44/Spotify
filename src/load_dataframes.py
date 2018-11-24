@@ -3,19 +3,13 @@ Michael S. Emanuel
 Sat Nov 24 12:28:39 2018
 """
 
-
-import os
 import pandas as pd
 import time
 from IPython.display import display
 
-# Path for Dropbox
-path_dropbox_mpd = 'D:/Dropbox/IACS-CS-209-Spotify/mpd/database_export'
-# Navigate to the dropbox folder
-os.chdir(path_dropbox_mpd)
-
 # Filename for the main h5 data file
-fname_h5 = 'data.h5'
+fname_h5 = '../data/data.h5'
+fname_pe_h5 = '../data/playlist_entry.h5'
 
 # Start timer
 t0 = time.time()
@@ -27,7 +21,7 @@ df_track = pd.read_hdf(fname_h5, 'Track')
 df_playlist = pd.read_hdf(fname_h5, 'Playlist')
 
 # Load the big dataframe for PlaylistEntry
-df_playlist_entry = pd.read_hdf('playlist_entry.h5', 'PlaylistEntry')
+df_playlist_entry = pd.read_hdf(fname_pe_h5, 'PlaylistEntry')
 
 # Load the dataframes for audio features: AudioFeatures, Genre, MetaGenre, TrackGenre, TrackMetaGenre
 df_audio_features = pd.read_hdf(fname_h5, 'AudioFeatures')

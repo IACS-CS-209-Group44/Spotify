@@ -1,3 +1,6 @@
+# H5 data files (too big for GitHub)
+*.h5
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
