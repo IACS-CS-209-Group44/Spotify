@@ -13,7 +13,7 @@ INSERT INTO dbo.Playlist
  DurationMS, IsCollaborative, ModifiedAt)
 SELECT
   pl.PlaylistID,
-  pl.PlaylistName,
+  TRIM(pl.PlaylistName) AS PlaylistName,
   pl.NumTracks,
   pl.NumArtists,
   pl.NumFollowers,

@@ -23,9 +23,9 @@ SELECT
   t1.PlaylistName,
   LTRIM(RTRIM(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
   REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
-  REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(t1.PlaylistName),
+  REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(t1.PlaylistName),
   ':',''),'~',''),'!',''),'@',''),'#',''),'$',''),'%',''),'*',''),'(',''),')',''),'_',''),'+',''),
   '{',''),'}',''),'[',''),']',''),';',''),'''s',' S'),':',''),'"',''),'<',''),'>',''),'?',''),
-  'c/o',''),',',''),'.',''),'&',''),'-',''),'/','')))
+  'c/o',''),',',''),'.',''),'&',''),'-',''),'/',''),'''','')))
 FROM
   t1;

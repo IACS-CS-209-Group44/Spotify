@@ -10,13 +10,16 @@ from sklearn.model_selection import train_test_split
 # Filename for the main h5 data file
 fname_h5 = '../data/data.h5'
 
-# Split playlist dataframe into train and test
-df_playlist = pd.read_hdf(fname_h5, 'Playlist')
-df_playlist_trn, df_playlist_tst = train_test_split(df_playlist, test_size=0.10, random_state=42)
 
-# Save these two frames to data.h5 file
-df_playlist_trn.to_hdf(fname_h5, key='Playlist_trn')
-df_playlist_tst.to_hdf(fname_h5, key='Playlist_tst')
+def make_train_test(df_playlist):
+    """Make the train/test split; save it the data.h5 file."""
+    # Split playlist dataframe into train and test
+    df_playlist_trn, df_playlist_tst = train_test_split(df_playlist, test_size=0.10, random_state=42)
+    
+    # Save these two frames to data.h5 file
+    # df_playlist_trn.to_hdf(fname_h5, key='Playlist_trn')
+    # df_playlist_tst.to_hdf(fname_h5, key='Playlist_tst')
+    return df_playlist_trn, df_playlist_tst
 
 
 def export_csv():

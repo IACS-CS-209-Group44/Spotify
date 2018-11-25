@@ -21,14 +21,15 @@ WHERE
 GROUP BY pn.SimpleName, pe.TrackID;
 GO
 
-INSERT INTO dbo.TrackFreqByPlaylistName
-(PlaylistName, TrackID, Frequency)
-SELECT
-  pn.PlaylistName,
-  tfsn.TrackID,
-  tfsn.Frequency
-FROM
-  dbo.TrackFreqBySimpleName AS tfsn
-  INNER JOIN dbo.PlaylistName AS pn ON
-    pn.SimpleName = tfsn.SimpleName;
-GO;
+--  INSERT INTO dbo.TrackFreqByPlaylistName
+--  (PlaylistName, TrackID, Frequency)
+--  SELECT
+--    pn.PlaylistName,
+--    tfsn.TrackID,
+--    tfsn.Frequency
+--  FROM
+--    dbo.TrackFreqBySimpleName AS tfsn
+--    INNER JOIN dbo.PlaylistName AS pn ON
+--      pn.SimpleName = tfsn.SimpleName;
+--  GO;
+--
