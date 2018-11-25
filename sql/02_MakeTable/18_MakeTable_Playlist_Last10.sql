@@ -1,0 +1,29 @@
+USE SpotifyDB;
+GO
+
+CREATE TABLE dbo.Playlist_Last10(
+PlaylistID INT NOT NULL,
+TrackID_1 INT NOT NULL,
+TrackID_2 INT NOT NULL,
+TrackID_3 INT NOT NULL,
+TrackID_4 INT NOT NULL,
+TrackID_5 INT NOT NULL,
+TrackID_6 INT NOT NULL,
+TrackID_7 INT NOT NULL,
+TrackID_8 INT NOT NULL,
+TrackID_9 INT NOT NULL,
+TrackID_10 INT NOT NULL,
+CONSTRAINT PK_Playlist_Last10_PlaylistID PRIMARY KEY (PlaylistID),
+CONSTRAINT FK_Playlist_Last10_PlaylistID 
+  FOREIGN KEY (PlaylistID) REFERENCES dbo.Playlist(PlaylistID),
+CONSTRAINT FK_Playlist_Last10_TrackID_1 FOREIGN KEY (TrackID_1) REFERENCES dbo.Track(TrackID),
+CONSTRAINT FK_Playlist_Last10_TrackID_2 FOREIGN KEY (TrackID_2) REFERENCES dbo.Track(TrackID),
+CONSTRAINT FK_Playlist_Last10_TrackID_3 FOREIGN KEY (TrackID_3) REFERENCES dbo.Track(TrackID),
+CONSTRAINT FK_Playlist_Last10_TrackID_4 FOREIGN KEY (TrackID_4) REFERENCES dbo.Track(TrackID),
+CONSTRAINT FK_Playlist_Last10_TrackID_5 FOREIGN KEY (TrackID_5) REFERENCES dbo.Track(TrackID),
+CONSTRAINT FK_Playlist_Last10_TrackID_6 FOREIGN KEY (TrackID_6) REFERENCES dbo.Track(TrackID),
+CONSTRAINT FK_Playlist_Last10_TrackID_7 FOREIGN KEY (TrackID_7) REFERENCES dbo.Track(TrackID),
+CONSTRAINT FK_Playlist_Last10_TrackID_8 FOREIGN KEY (TrackID_8) REFERENCES dbo.Track(TrackID),
+CONSTRAINT FK_Playlist_Last10_TrackID_9 FOREIGN KEY (TrackID_9) REFERENCES dbo.Track(TrackID),
+CONSTRAINT FK_Playlist_Last10_TrackID_10 FOREIGN KEY (TrackID_10) REFERENCES dbo.Track(TrackID),
+);

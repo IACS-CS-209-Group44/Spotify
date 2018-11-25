@@ -7,28 +7,33 @@ import pandas as pd
 import time
 from IPython.display import display
 
-# Filename for the main h5 data file
-fname_h5 = '../data/data.h5'
-fname_pe_h5 = '../data/playlist_entry.h5'
+# Filenames for h5 data files
+fname_data = '../data/data.h5'
+fname_entry = '../data/playlist_entry.h5'
+fname_pairs = '../data/track_pairs.h5'
 
 # Start timer
 t0 = time.time()
 
 # Load the dataframes for Artist, Album, Track, and Playlist
-df_artist = pd.read_hdf(fname_h5, 'Artist')
-df_album = pd.read_hdf(fname_h5, 'Album')
-df_track = pd.read_hdf(fname_h5, 'Track')
-df_playlist = pd.read_hdf(fname_h5, 'Playlist')
+df_artist = pd.read_hdf(fname_data, 'Artist')
+df_album = pd.read_hdf(fname_data, 'Album')
+df_track = pd.read_hdf(fname_data, 'Track')
+df_playlist = pd.read_hdf(fname_data, 'Playlist')
+df_playlist_last10 = pd.read_hdf(fname_data, 'Playlist_Last10')
 
 # Load the big dataframe for PlaylistEntry
-df_playlist_entry = pd.read_hdf(fname_pe_h5, 'PlaylistEntry')
+df_playlist_entry = pd.read_hdf(fname_entry, 'PlaylistEntry')
 
 # Load the dataframes for audio features: AudioFeatures, Genre, MetaGenre, TrackGenre, TrackMetaGenre
-df_audio_features = pd.read_hdf(fname_h5, 'AudioFeatures')
-df_genre = pd.read_hdf(fname_h5, 'Genre')
-df_meta_genre = pd.read_hdf(fname_h5, 'MetaGenre')
-df_track_genre = pd.read_hdf(fname_h5, 'TrackGenre')
-df_track_meta_genre = pd.read_hdf(fname_h5, 'TrackMetaGenre')
+df_audio_features = pd.read_hdf(fname_data, 'AudioFeatures')
+df_genre = pd.read_hdf(fname_data, 'Genre')
+df_meta_genre = pd.read_hdf(fname_data, 'MetaGenre')
+df_track_genre = pd.read_hdf(fname_data, 'TrackGenre')
+df_track_meta_genre = pd.read_hdf(fname_data, 'TrackMetaGenre')
+
+# Load the big dataframe for TrackPairs
+df_track_pairs = pd.read_hdf(fname_pairs, 'TrackPairs')
 
 # Status update
 t1 = time.time()
