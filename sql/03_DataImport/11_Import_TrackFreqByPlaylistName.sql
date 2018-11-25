@@ -1,4 +1,8 @@
-WITH t1 AS (
+USE SpotifyDB;
+GO
+
+INSERT INTO dbo.TrackFreqBySimpleName
+(SimpleName, TrackID, Frequency)
 SELECT
   pn.SimpleName,
   pe.TrackID,
@@ -14,14 +18,17 @@ FROM
 WHERE
   --Only training data!
   tts.TrainTestTypeID = 1
-GROUP BY pn.SimpleName, pe.TrackID
-)
+GROUP BY pn.SimpleName, pe.TrackID;
+GO
+
+INSERT INTO dbo.TrackFreqByPlaylistName
+(PlaylistName, TrackID, Frequency)
 SELECT
-TOP 100
   pn.PlaylistName,
-  t1.TrackID,
-  t1.Frequency
+  tfsn.TrackID,
+  tfsn.Frequency
 FROM
-  dbo.PlaylistName AS pn
-  INNER JOIN t1 ON
-    t1.SimpleName = pn.SimpleName;
+  dbo.TrackFreqBySimpleName AS tfsn
+  INNER JOIN dbo.PlaylistName AS pn ON
+    pn.SimpleName = tfsn.SimpleName;
+GO;

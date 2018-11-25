@@ -82,7 +82,7 @@ def calc_track_freq_by_name(playlist, entry):
     return name_track.groupby(by=['PlaylistName', 'TrackID']).size()
 
 
-def predict_baseline(name):
+def predict_baseline(playlist, entry):
     """Predict y in the simple baseline model"""
     pass
 
@@ -121,3 +121,4 @@ if 'y_sp_trn' not in globals():
     
 track_freq_by_name = calc_track_freq_by_name(playlist_trn, entry_trn)
 xxx = track_freq_by_name.reset_index(name='Count')
+tfbn = track_freq_by_name
