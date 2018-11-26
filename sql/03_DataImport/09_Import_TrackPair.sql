@@ -23,9 +23,7 @@ FROM
     pe2.PlaylistID = pl.PlaylistID
 WHERE
   -- Only the training set!
-  tts.TrainTestTypeID = 1 AND
-  -- Get pairs only in the order where TrackID_1 < TrackID_2
-  pe1.TrackID < pe2.TrackID  
+  tts.TrainTestTypeID = 1
 GROUP BY
   pe1.TrackID, pe2.TrackID
 GO

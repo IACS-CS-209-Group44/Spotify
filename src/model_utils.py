@@ -5,6 +5,7 @@ Sun Nov 25 10:56:35 2018
 
 import numpy as np
 import scipy.sparse as sp
+from scipy.sparse.csr import csr_matrix
 import pandas as pd
 from typing import Dict, Optional
 
@@ -41,9 +42,24 @@ def load_playlist_entry(frames: Dict[str, pd.DataFrame], n_trn: Optional[int] = 
     return playlist_trn, playlist_tst, entry_trn, entry_tst
 
 
-def calc_y(frames: Dict[str, pd.DataFrame], playlist: pd.DataFrame, predict_count: int=10):
+def make_csr_mat(IDs: np.ndarray, m: int, n: int, maxID: int) -> csr_matrix:
+    """Convert an mxn matrix of integer IDs into a sparse matrix row matrix"""
+    mn: int = m*n
+    sp_i = np.arange(mn, dtype=np.int32) // n
+    sp_j = IDs.flatten()
+    sp_data = np.ones(shape=mn, dtype=np.float32)
+    sp_idx = (sp_i, sp_j)
+    # The shape of the sparse matrix; rows are playlists, columns are tracks (1 if included)
+    sp_shape = (m, maxID)
+    # Use Compressed Sparse Row format; every row is a sparse vector containing mostly zeroes
+    return sp.csr_matrix((sp_data, sp_idx), shape=sp_shape)
+
+
+def calc_y(frames: Dict[str, pd.DataFrame], playlist: pd.DataFrame) -> csr_matrix:
     """Make the target (y) vector given dataframe for playlist"""
-    # The number of tracks
+    # The number of tracks held out at the end for scoring
+    predict_count: int = 10
+    # The number of tracks (for sizing spare matrices)
     track_count: int = len(frames['Track'])
     # Find n (number of playlists)
     n: int = len(playlist)    
@@ -52,21 +68,19 @@ def calc_y(frames: Dict[str, pd.DataFrame], playlist: pd.DataFrame, predict_coun
     # Extrack the last 10 Track IDs from the playlist dataframe
     for j in range(predict_count):
         col_name = f'TrackID_{j+1}'
-        y_id[:,j] = playlist[col_name].values
-    
+        y_id[:,j] = playlist[col_name].values    
     # Sparse matrix with the sum of these entries
-    sp_i = np.arange(n*predict_count, dtype=np.int32) // predict_count
-    sp_j = y_id.flatten()
-    sp_data = np.ones(shape=n*predict_count, dtype=np.float32)
-    sp_idx = (sp_i, sp_j)
-    # The shape of the sparse matrix; rows are playlists, columns are tracks (1 if included)
-    sp_shape = (n, track_count)
-    # Use Compressed Sparse Row format; every row is a sparse vector containing mostly zeroes
-    y = sp.csr_matrix((sp_data, sp_idx), shape=sp_shape)
-    # Return tuple with sparse and ID matrices
-    return y, y_id
+    y_csr = make_csr_mat(y_id, n, predict_count, track_count)
+    # Return a single sparse matrix
+    return y_csr
 
 
-def score():
-    """"""
-    pass
+def calc_score(y_true: csr_matrix, y_pred: csr_matrix):
+    """Score predictions in csr format"""
+    # Hits are when we guessed a track that appeared
+    # This is an efficient operation when both entries are csr_matrix instances
+    hits = y_true.multiply(y_pred)
+    # Sum the hits along the rows; results will be an nx1 array of scores, one for each training point
+    scores = np.sum(hits, axis=1)
+    # Return the scores as a flattened numpy array
+    return scores.A.flatten()

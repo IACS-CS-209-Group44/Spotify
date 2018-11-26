@@ -13,5 +13,5 @@ SELECT
 FROM
   dbo.TrackPair AS tp
 WHERE
-  tp.TrackID_1 < tp.TrackID_2 and
+  tp.TrackID_1 <= tp.TrackID_2 and
   tp.Frequency > 2;
