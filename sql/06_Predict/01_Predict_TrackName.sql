@@ -1,4 +1,21 @@
+USE SpotifyDB;
+GO
+
+DECLARE @PlaylistCount AS INT = 1000000;
+DECLARE @BatchSize AS INT = 100;
+DECLARE @i AS INT = 0;
+DECLARE @p1 INT;
+DECLARE @p2 INT;
+
+WHILE (@i * @BatchSize) < @PlaylistCount
+BEGIN
+
+-- Range of playlists for this loop iteration
+SET @p1 = (@i * @BatchSize + 1);
+SET @p2 = ((@i+1) * @BatchSize);
+
 -- Get rid of old predictions with this prediction strategy
+-- in the current playlist block.
 DELETE
   pr
 FROM
@@ -6,9 +23,10 @@ FROM
   INNER JOIN dbo.PredictionStrategy AS ps ON
     ps.PredictionStrategyID = pr.PredictionStrategyID
 WHERE
-  ps.PredictionStrategyName = 'PlaylistName';
-GO
+  ps.PredictionStrategyName = 'PlaylistName'
+  AND pr.PlaylistID BETWEEN @p1 AND @p2;
 
+-- Insert the current block of predictions
 WITH t1 AS(
 SELECT
   pl.PlaylistID,
@@ -29,6 +47,8 @@ FROM
   -- The baseline popularity of this track
   INNER JOIN dbo.TrackRank AS trr ON
     trr.TrackID = tfsn.TrackID
+-- Current block of PlaylistIDs
+WHERE pl.PlaylistID BETWEEN @p1 AND @p2
 )
 INSERT INTO dbo.Prediction
 (PredictionStrategyID, PlaylistID, Position, TrackID, x1, x2)
@@ -47,3 +67,9 @@ FROM
 WHERE
   -- Only the top 100 predictions
   t1.Position <= 100;
+
+-- Status update; manual loop increment
+PRINT CONCAT('Completed PlaylistID ', @i*@BatchSize+1, ' to ', (@i+1)*@BatchSize);
+SET @i = @i+1;
+
+END

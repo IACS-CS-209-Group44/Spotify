@@ -42,6 +42,46 @@ def load_playlist_entry(frames: Dict[str, pd.DataFrame], n_trn: Optional[int] = 
     return playlist_trn, playlist_tst, entry_trn, entry_tst
 
 
+def load_playlist_entry_slices(frames: Dict[str, pd.DataFrame], step_size: int):
+    """Load data for playlists and entries; n_trn is the number of items in train and test, respectively"""
+    
+    # Load playlist dataframe
+    playlist_trn = frames['Playlist_trn']
+    playlist_tst = frames['Playlist_tst']
+    
+    # Load the last 10 tracks on all playlists
+    playlist_last10 = frames['Playlist_Last10']
+    
+    # Merge the playlist attributes with the last 10 tracks (train and test)
+    playlist_trn = pd.merge(left=playlist_trn, right=playlist_last10, on='PlaylistID')
+    playlist_tst = pd.merge(left=playlist_tst, right=playlist_last10, on='PlaylistID')
+    
+    # Legnth of train and test
+    n_trn = len(playlist_trn)
+    n_tst = len(playlist_tst)
+    # End points for slices
+    idx_trn = np.arange(0, n_trn, step_size, dtype=int)
+    idx_tst = np.arange(0, n_tst, step_size, dtype=int)
+    # Number of slices
+    slices_trn = len(idx_trn)-1
+    slices_tst = len(idx_tst)-1
+    # Get num_slices slices for train and test
+    playlists_trn = [playlist_trn.iloc[idx_trn[i]:idx_trn[i+1]] for i in range(slices_trn)]
+    playlists_tst = [playlist_tst.iloc[idx_tst[i]:idx_tst[i+1]] for i in range(slices_tst)]
+    
+    # Load the entry dataframe
+    entry = frames['PlaylistEntry']       
+    # Get playlist entries for train and test
+    entry_cols = ['PlaylistID', 'Position', 'TrackID']
+    entrys_trn = [pd.merge(left=playlist_trn, right=entry, how='inner', on='PlaylistID')[entry_cols] 
+        for playlist_trn in playlists_trn]
+    entrys_tst = [pd.merge(left=playlist_tst, right=entry, how='inner', on='PlaylistID')[entry_cols] 
+        for playlist_tst in playlists_tst]
+    
+    # Return four dataframes: playlist and entry on train and test
+    return playlists_trn, playlists_tst, entrys_trn, entrys_tst
+
+
 def make_csr_mat(IDs: np.ndarray, m: int, n: int, maxID: int) -> csr_matrix:
     """Convert an mxn matrix of integer IDs into a sparse matrix row matrix"""
     mn: int = m*n
