@@ -1,3 +1,6 @@
+USE SpotifyDB;
+GO
+
 DECLARE @PlaylistCount AS INT = 1000000;
 DECLARE @BatchSize AS INT = 1000;
 DECLARE @i AS INT = 0;
@@ -57,7 +60,7 @@ WHERE NOT EXISTS
    WHERE 
     pe.PlaylistID = t1.PlaylistID AND 
     pe.TrackID = t1.TrackID AND 
-    pe.Position <= t1.NumTracks - 10)
+    pe.Position <= t1.NumTracks - 11)
 )
 -- Insert the first 512 positions into the Prediction table
 INSERT INTO dbo.Prediction_SimpleName
