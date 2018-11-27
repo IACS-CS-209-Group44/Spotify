@@ -33,10 +33,11 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         'Track': ('Track.csv', 'data.h5'),
         'Playlist': ('Playlist.csv', 'data.h5'),
     
-        # Tables relating to prediction outcoumes and track frequencies 
+        # Tables relating to prediction outcomes and track frequencies 
         'Playlist_Last10': ('Playlist_Last10.csv', 'data.h5'),
         'TrackRank': ('TrackRank.csv', 'data.h5'),
         'PlaylistName':('PlaylistName.csv', 'data.h5'),
+        'PlaylistSimpleName':('PlaylistSimpleName.csv', 'data.h5'),
         'TrackRankBySimpleName': ('TrackRankBySimpleName.csv', 'data.h5'),
     
         # PlaylistEntry table is big - put it in its own file

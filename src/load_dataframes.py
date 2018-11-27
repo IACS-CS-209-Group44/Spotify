@@ -29,6 +29,7 @@ def load_frames(frame_names: Optional[List[str]] = None) -> Dict[str, pd.DataFra
         'Playlist_tst': 'data.h5',
         'TrackRank': 'data.h5',
         'PlaylistName': 'data.h5',
+        'PlaylistSimpleName': 'data.h5',
         'TrackRankBySimpleName': 'data.h5',
     
         # PlaylistEntry table is big - saved int its own file
