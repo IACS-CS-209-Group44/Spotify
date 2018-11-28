@@ -1,5 +1,8 @@
-# H5 data files (too big for GitHub)
+# Various flavors of data files (too big for GitHub)
 *.h5
+*.npy
+*.npz
+*.pickle
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

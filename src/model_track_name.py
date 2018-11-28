@@ -8,7 +8,7 @@ import numpy as np
 # import pandas as pd
 from tqdm import tqdm
 from load_dataframes import load_frames 
-from model_utils import load_playlist_entry, load_playlist_entry_slices, make_csr_mat, calc_y, calc_score
+from model_utils import load_playlist_entry, make_csr_mat, calc_y, calc_score
 
 
 # *************************************************************************************************
@@ -28,7 +28,7 @@ def predict_by_name(frames, playlist, entry, predict_count: int) -> np.ndarray:
     # Reindex entry to be indexed by (PlaylistID, Position)
     entry_idx = entry.set_index(keys=['PlaylistID', 'Position'])
     # Reindex track by name to be indexed on (SimpleName, TrackRank)
-    track_by_name_idx = track_by_name.set_index(keys=['SimpleName','TrackRank'])
+    track_by_name_idx = track_by_name.set_index(keys=['PlaylistSimpleNameID','TrackRank'])
     # Get playlist names
     playlist_names = playlist.PlaylistName.values
     # Overwrite any NAs that arise due to HORRIBLE NO GOOD PANDAS behavior... with empty string
@@ -36,7 +36,7 @@ def predict_by_name(frames, playlist, entry, predict_count: int) -> np.ndarray:
     bad_playlist_names = playlist.PlaylistName.isna()
     playlist_names[bad_playlist_names] = ''
     # Simple names of the playlists
-    simple_names = playlist_name_tbl.loc[playlist_names].SimpleName.values
+    simple_nameIDs = playlist_name_tbl.loc[playlist_names].PlaylistSimpleNameID.values
     # Matrix of predicted TrackIDs
     y_id = np.zeros((n, predict_count), dtype=np.int64)
     # Status update
@@ -44,7 +44,7 @@ def predict_by_name(frames, playlist, entry, predict_count: int) -> np.ndarray:
     # Iterate through the playlists
     for i in tqdm(range(n)):
         # The  simple name of this playlist (lower case, keep punctuation)
-        simple_name: str = simple_names[i]
+        simple_nameID: int = simple_nameIDs[i]
         # The playlist_id and number of tracks in this playlist
         playlist_id: np.int64 = playlist.iloc[i].PlaylistID
         num_tracks: np.int64 = playlist.iloc[i].NumTracks
@@ -52,7 +52,7 @@ def predict_by_name(frames, playlist, entry, predict_count: int) -> np.ndarray:
         duplicate_tracks = entry_idx.loc[playlist_id].values[0:num_tracks-predict_count]
         # Candidate tracks in descending frequency order
         try:
-            candidate_tracks = track_by_name_idx.loc[simple_name].TrackID.values
+            candidate_tracks = track_by_name_idx.loc[simple_nameID].TrackID.values
         except:
             # If the playlist name is not available, put in an empty array as a placeholder
             # will fall back on baseline frequency below
@@ -74,18 +74,14 @@ def predict_by_name(frames, playlist, entry, predict_count: int) -> np.ndarray:
 # main
 
 # Set desired sizes for train and test
-n_trn: int = 900000
-n_tst: int = 100000
+n_trn: int = 9000
+n_tst: int = 1000
 
 # Load all the data frames
 if 'frames' not in globals():
     frames = load_frames()
 else:
     print(f'frames already loaded in memory.')    
-
-# Parallel experiment
-playlists_trn, playlists_tst, entrys_trn, entrys_tst = load_playlist_entry_slices(frames, 10000)
-print('Loaded playlists and entries in parallel slices')
 
 # File name for numpy arrays
 fname_npz = '../calcs/model_track_name.npz'
