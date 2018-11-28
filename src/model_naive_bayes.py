@@ -11,6 +11,16 @@ from load_dataframes import load_frames
 # from model_utils import load_playlist_entry, load_playlist_entry_slices, make_csr_mat, calc_y, calc_score
 
 
+def make_csr(sp_i:np.ndarray, sp_j: np.ndarray, sp_data: np.ndarray, m: int, n: int):
+    # Convert arrays of i, j, v; and shape m, n into a csr matrix
+    return sp.csc_matrix((sp_data, (sp_i, sp_j)), shape=(m, n))
+
+
+def make_csc(sp_i:np.ndarray, sp_j: np.ndarray, sp_data: np.ndarray, m: int, n: int):
+    # Convert arrays of i, j, v; and shape m, n into a csr matrix
+    return sp.csc_matrix((sp_data, (sp_i, sp_j)), shape=(m, n))
+
+
 # *************************************************************************************************
 # main
 
@@ -27,9 +37,10 @@ else:
 track_pairs = frames['TrackPairs']
 tp = track_pairs
 
+# Number of tracks and playlists
+n_p: int = len(frames['Playlist'])
+n_t: int = len(frames['Track']) + 1
 # Build sparse matrix
-# m: int = len(frames['Playlist'])
-n: int = len(frames['Track'])+1
 sp_i = tp.TrackID_1.values
 sp_j = tp.TrackID_2.values
 sp_data = tp.Frequency.values.astype(np.float32)
@@ -45,4 +56,12 @@ pe = frames['PlaylistEntry'].set_index(keys=['PlaylistID'])
 
 # Predict a playlist
 playlist_id = 0
-x_id = pe.loc[playlist_id].TrackID
+x_id = pe.loc[playlist_id].TrackID.values
+
+
+k = len(x_id)
+sp_i = x_id
+sp_j = np.zeros_like(x_id)
+sp_data = np.ones_like(x_id, dtype=np.float32)
+# x = sp.csc_matrix((sp_data, (sp_i, sp_j)), shape=(n,1))
+x = make_csc(x_id, np.zeros_like(x_id), np.ones_like(x_id, dtype=np.float32), n, 1)

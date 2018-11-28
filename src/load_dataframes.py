@@ -24,6 +24,7 @@ def load_frames(frame_names: Optional[List[str]] = None) -> Dict[str, pd.DataFra
         'Playlist': 'data.h5',
     
         # Tables relating to prediction outcoumes and track frequencies 
+        #'TrainTestSplit': 'data.h5',
         'Playlist_Last10': 'data.h5',
         'Playlist_trn': 'data.h5',
         'Playlist_tst': 'data.h5',

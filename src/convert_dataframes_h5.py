@@ -33,7 +33,8 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         'Track': ('Track.csv', 'data.h5'),
         'Playlist': ('Playlist.csv', 'data.h5'),
     
-        # Tables relating to prediction outcomes and track frequencies 
+        # Tables relating to prediction outcomes and track frequencies
+        'TrainTestSplit': ('TrainTestSplit.csv', 'data.h5'),
         'Playlist_Last10': ('Playlist_Last10.csv', 'data.h5'),
         'TrackRank': ('TrackRank.csv', 'data.h5'),
         'PlaylistName':('PlaylistName.csv', 'data.h5'),
