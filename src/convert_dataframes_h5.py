@@ -61,6 +61,9 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         'Scores_SimpleName': ('Scores_SimpleName.csv', 'data.h5'),
         # 'Scores_TrackPair': ('Scores_TrackPair.csv', 'data.h5'),
         
+        # Artists being promoted by policy (mid-tier, female)
+        'PromotedArtist': ('PromotedArtist.csv', 'data.h5')
+        
         }
     
     # Set frame_names to all tables if it was not specified
