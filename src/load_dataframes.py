@@ -50,8 +50,8 @@ def load_frames(frame_names: Optional[List[str]] = None) -> Dict[str, pd.DataFra
         
         # Scores of three models: baseline, playlist name, naive bayes
         'Scores_Baseline': 'data.h5',
-        'Scores_SimpleName': 'data.h5'
-        # 'Scores_TrackPair': 'data.h5'
+        'Scores_SimpleName': 'data.h5',
+        'Scores_TrackPair': 'data.h5',
         
         }
     

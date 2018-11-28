@@ -59,7 +59,7 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         # Scores of three models: baseline, playlist name, naive bayes
         'Scores_Baseline': ('Scores_Baseline.csv', 'data.h5'),
         'Scores_SimpleName': ('Scores_SimpleName.csv', 'data.h5'),
-        # 'Scores_TrackPair': ('Scores_TrackPair.csv', 'data.h5'),
+        'Scores_TrackPair': ('Scores_TrackPair.csv', 'data.h5'),
         
         # Artists being promoted by policy (mid-tier, female)
         'PromotedArtist': ('PromotedArtist.csv', 'data.h5')

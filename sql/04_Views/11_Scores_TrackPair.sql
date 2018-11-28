@@ -1,10 +1,10 @@
 USE SpotifyDB;
 GO
 
-DROP VIEW IF EXISTS v.PredictionScores_Baseline;
+DROP VIEW IF EXISTS v.Scores_SimpleName;
 GO
 
-CREATE VIEW v.PredictionScores_Baseline AS
+CREATE VIEW v.Scores_SimpleName AS
 -- Hit rate on Training set
 WITH trn AS (
 SELECT
@@ -12,7 +12,7 @@ SELECT
   COUNT(pr.TrackID) AS Hits,
   COUNT(pr.TrackID) / 900000.0 AS HitRate
 FROM
-  dbo.Prediction_Baseline AS pr
+  dbo.Prediction_SimpleName AS pr
   INNER JOIN dbo.PlaylistTrack_Last10 AS ptl ON
     ptl.PlaylistID = pr.PlaylistID AND
     ptl.TrackID = pr.TrackID
@@ -32,7 +32,7 @@ SELECT
   COUNT(pr.TrackID) AS Hits,
   COUNT(pr.TrackID) / 100000.0 AS HitRate
 FROM
-  dbo.Prediction_Baseline AS pr
+  dbo.Prediction_SimpleName AS pr
   INNER JOIN dbo.PlaylistTrack_Last10 AS ptl ON
     ptl.PlaylistID = pr.PlaylistID AND
     ptl.TrackID = pr.TrackID
