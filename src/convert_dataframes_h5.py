@@ -33,9 +33,11 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         'Track': ('Track.csv', 'data.h5'),
         'Playlist': ('Playlist.csv', 'data.h5'),
     
-        # Tables relating to prediction outcomes and track frequencies
+        # Tables relating to prediction outcomes and scoring
         'TrainTestSplit': ('TrainTestSplit.csv', 'data.h5'),
         'Playlist_Last10': ('Playlist_Last10.csv', 'data.h5'),
+    
+        # Tables relating to the baseline and playlist name prediction models
         'TrackRank': ('TrackRank.csv', 'data.h5'),
         'PlaylistName':('PlaylistName.csv', 'data.h5'),
         'PlaylistSimpleName':('PlaylistSimpleName.csv', 'data.h5'),
@@ -53,6 +55,12 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         
         # TrackPairs table is big - put it in its own file
         'TrackPairs': ('TrackPairs.csv', 'track_pairs.h5'),
+        
+        # Scores of three models: baseline, playlist name, naive bayes
+        'Scores_Baseline': ('Scores_Baseline.csv', 'data.h5'),
+        'Scores_SimpleName': ('Scores_SimpleName.csv', 'data.h5'),
+        # 'Scores_TrackPair': ('Scores_TrackPair.csv', 'data.h5'),
+        
         }
     
     # Set frame_names to all tables if it was not specified

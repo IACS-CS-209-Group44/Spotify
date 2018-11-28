@@ -23,14 +23,16 @@ def load_frames(frame_names: Optional[List[str]] = None) -> Dict[str, pd.DataFra
         'Track': 'data.h5',
         'Playlist': 'data.h5',
     
-        # Tables relating to prediction outcoumes and track frequencies 
-        #'TrainTestSplit': 'data.h5',
+        # Tables relating to prediction outcomes and scoring
+        'TrainTestSplit': 'data.h5',
         'Playlist_Last10': 'data.h5',
         'Playlist_trn': 'data.h5',
         'Playlist_tst': 'data.h5',
+        
+        # Tables relating to the baseline and playlist name prediction models
         'TrackRank': 'data.h5',
         'PlaylistName': 'data.h5',
-        # 'PlaylistSimpleName': 'data.h5',
+        'PlaylistSimpleName': 'data.h5',
         'TrackRankBySimpleName': 'data.h5',
     
         # PlaylistEntry table is big - saved int its own file
@@ -45,6 +47,12 @@ def load_frames(frame_names: Optional[List[str]] = None) -> Dict[str, pd.DataFra
         
         # TrackPairs table is big - saved in its own file
         'TrackPairs': 'track_pairs.h5',
+        
+        # Scores of three models: baseline, playlist name, naive bayes
+        'Scores_Baseline': 'data.h5',
+        'Scores_SimpleName': 'data.h5'
+        # 'Scores_TrackPair': 'data.h5'
+        
         }
     
     # Set frame_names to all tables if it was not specified
