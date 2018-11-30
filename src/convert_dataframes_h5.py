@@ -61,6 +61,11 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         'Scores_SimpleName': ('Scores_SimpleName.csv', 'data.h5'),
         'Scores_TrackPair': ('Scores_TrackPair.csv', 'data.h5'),
         
+        # Survey responses
+        'SurveyResponse': ('SurveyResponse.csv', 'data.h5'),
+        'SurveyPlaylist': ('SurveyPlaylist.csv', 'data.h5'),
+        'SurveyPlaylistEntry': ('SurveyPlaylistEntry.csv', 'data.h5'),
+
         # Artists being promoted by policy (mid-tier, female)
         'PromotedArtist': ('PromotedArtist.csv', 'data.h5')
         
