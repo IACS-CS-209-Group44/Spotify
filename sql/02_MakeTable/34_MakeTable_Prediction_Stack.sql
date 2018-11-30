@@ -8,6 +8,7 @@ CREATE TABLE dbo.Prediction_Stack(
 PlaylistID INT NOT NULL,
 Position SMALLINT NOT NULL,
 TrackID INT NOT NULL,
+StackedRate FLOAT NOT NULL,
 BaselineRate FLOAT NOT NULL,
 SimpleNameRate FLOAT NOT NULL,
 TrackPairRate FLOAT NOT NULL,

@@ -52,6 +52,7 @@ def load_frames(frame_names: Optional[List[str]] = None) -> Dict[str, pd.DataFra
         'Scores_Baseline': 'data.h5',
         'Scores_SimpleName': 'data.h5',
         'Scores_TrackPair': 'data.h5',
+        'Scores_Stack': 'data.h5',
         
         # Survey responses
         'SurveyResponse': 'data.h5',
@@ -59,8 +60,11 @@ def load_frames(frame_names: Optional[List[str]] = None) -> Dict[str, pd.DataFra
         'SurveyPlaylistEntry': 'data.h5',
 
         # Artists being promoted by policy (mid-tier, female)
-        'PromotedArtist': 'data.h5'
+        'PromotedArtist': 'data.h5',
 
+        # Survey recommendations
+        'SurveyRecommendations': 'data.h5',
+        'SurveyRecommendationsPromoted': 'data.h5',
         }
     
     # Set frame_names to all tables if it was not specified

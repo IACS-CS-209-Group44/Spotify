@@ -1,24 +1,3 @@
-USE SpotifyDB;
-GO
-
-DECLARE @PlaylistCount AS INT = 1000000;
-DECLARE @BatchSize AS INT = 1000;
-DECLARE @i AS INT = 0;
-DECLARE @p1 INT;
-DECLARE @p2 INT;
-
-WHILE (@i * @BatchSize) < @PlaylistCount
-BEGIN
-
--- Range of playlists for this loop iteration
-SET @p1 = (@i * @BatchSize + 1);
-SET @p2 = ((@i+1) * @BatchSize);
-
--- Delete records in this block
-DELETE pr
-FROM dbo.Prediction_Stack AS pr
-WHERE pr.PlaylistID BETWEEN @p1 AND @p2;
-
 -- ****************************************************************
 -- Baseline Frequency
 WITH p1_f AS(
@@ -29,7 +8,7 @@ SELECT
 FROM
   dbo.Prediction_Baseline AS pr
 WHERE
-  pr.PlaylistID BETWEEN @p1 AND @p2
+  pr.PlaylistID = 1
 ), 
 -- Baseline normalization
 p1_n AS (
@@ -60,7 +39,7 @@ SELECT
 FROM
   dbo.Prediction_SimpleName AS pr
 WHERE
-  pr.PlaylistID BETWEEN @p1 AND @p2
+  pr.PlaylistID = 1
 ),
 -- Simple Name normalization
 p2_n AS (
@@ -91,7 +70,7 @@ SELECT
 FROM
   dbo.Prediction_TrackPair AS pr
 WHERE
-  pr.PlaylistID BETWEEN @p1 AND @p2
+  pr.PlaylistID = 1
 ),
 -- Simple Name normalization
 p3_n AS (
@@ -155,7 +134,7 @@ comp AS (
 SELECT
   ps.PlaylistID,
   ps.TrackID,
-  (0.001 * ps.BaselineRate + 0.25 * ps.NameRate + 0.75 * ps.TrackPairRate) / 1.001
+  (0.01 * ps.BaselineRate + 0.25 * ps.NameRate + 0.75 * ps.TrackPairRate) / 1.01
     AS StackedRate
 FROM 
   ps
@@ -170,7 +149,7 @@ SELECT
   ps.TrackID,
   comp.StackedRate,
   ps.BaselineRate,
-  ps.NameRate AS SimpleNameRate,
+  ps.NameRate,
   ps.TrackPairRate  
 FROM
   ps
@@ -178,24 +157,16 @@ FROM
     comp.PlaylistID = ps.PlaylistID AND
     comp.TrackID = ps.TrackID
 )
--- Insert this block of records
-INSERT INTO dbo.Prediction_Stack
-(PlaylistID, Position, TrackID, StackedRate, BaselineRate, SimpleNameRate, TrackPairRate)
+-- output
 SELECT
   pred.PlaylistID,
   pred.Position,
   pred.TrackID,
   pred.StackedRate,
   pred.BaselineRate,
-  pred.SimpleNameRate,
+  pred.NameRate,
   pred.TrackPairRate
 FROM
   pred
 WHERE
   pred.Position <= 256;
-
--- Status update; manual loop increment
-PRINT CONCAT('Completed PlaylistID ', @p1, ' to ', @p2);
-SET @i = @i+1;
-
-END

@@ -60,6 +60,7 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         'Scores_Baseline': ('Scores_Baseline.csv', 'data.h5'),
         'Scores_SimpleName': ('Scores_SimpleName.csv', 'data.h5'),
         'Scores_TrackPair': ('Scores_TrackPair.csv', 'data.h5'),
+        'Scores_Stack': ('Scores_Stack.csv', 'data.h5'),
         
         # Survey responses
         'SurveyResponse': ('SurveyResponse.csv', 'data.h5'),
@@ -67,8 +68,11 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         'SurveyPlaylistEntry': ('SurveyPlaylistEntry.csv', 'data.h5'),
 
         # Artists being promoted by policy (mid-tier, female)
-        'PromotedArtist': ('PromotedArtist.csv', 'data.h5')
+        'PromotedArtist': ('PromotedArtist.csv', 'data.h5'),
         
+        # Survey recommendations
+        'SurveyRecommendations': ('SurveyRecommendations.csv', 'data.h5'),
+        'SurveyRecommendationsPromoted': ('SurveyRecommendationsPromoted.csv', 'data.h5'),        
         }
     
     # Set frame_names to all tables if it was not specified
@@ -90,7 +94,7 @@ def convert_frames(frame_names: Optional[List[str]] = None):
         df.to_hdf(path_h5 + fname_h5, key=frame_name)
         # Status update
         elapsed = time.time() - t0
-        print(f'Converted DatFrame {frame_name:24} from CSV to H5 format in {fname_h5}; {elapsed:0.2f} seconds.')
+        print(f'Converted DataFrame {frame_name:24} from CSV to H5 format in {fname_h5}; {elapsed:0.2f} seconds.')
     
     # Make playlist_trn and playlist_tst from playlist
     if 'Playlist' in frame_names or 'Playlist_trn' in frame_names or 'Playlist_tst' in frame_names:
